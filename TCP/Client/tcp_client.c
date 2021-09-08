@@ -1,19 +1,21 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<unistd.h>
-#include<string.h>
-#include<sys/socket.h>
-#include<netdb.h>
-#include<arpa/inet.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 // Maximum number of data that can transfer
 #define MESSAGE_LENGTH 1024
 #define PORT 8888 // port number to connect
 
 // Global Data
-int socket_file_descriptor, connection;
+int socket_file_descriptor, connection, status;
 struct sockaddr_in serveraddress, client;
 char message[MESSAGE_LENGTH];
+extern int errno;
 
 int main()
 {
@@ -25,10 +27,13 @@ int main()
    
     if(socket_file_descriptor == -1)
     {
-        printf("Creation of Socket failed.!\n");
+        printf("Creation of Socket failed! -- %s\n", strerror(errno));
         exit(1);
     }
-   
+    
+    //Just so we can see how this compares to the TCP server
+    printf("Socket File Descriptor: %d", socket_file_descriptor);
+
     // Erases the memory
     bzero(&serveraddress, sizeof(serveraddress));
    
@@ -42,11 +47,11 @@ int main()
     serveraddress.sin_family = AF_INET;
    
     // Establishing the Connection with server
-    connection = connect(socket_file_descriptor, (sockaddr*)&serveraddress, sizeof(serveraddress));
+    connection = connect(socket_file_descriptor, (struct sockaddr*)&serveraddress, sizeof(serveraddress));
    
     if(connection == -1)
     {
-        printf("Connection with the server failed.!\n");
+        printf("Connection with the server failed! -- %s\n", strerror(errno));
         exit(1);
     }
    
@@ -70,13 +75,19 @@ int main()
         // If the number of bytes is >= 0 then the data is sent successfully
         if(bytes >= 0)
         {
-            printf("Data send to the server successfully.!\n");
+            printf("Data transmitted to TCP server: %zd\n", bytes);
         }
        
         bzero(message, sizeof(message));
        
         // Reading the response from the server.
-        read(socket_file_descriptor, message, sizeof(message));
+        status = read(socket_file_descriptor, message, sizeof(message));
+
+        if(status == -1)
+        {
+            printf("Failed to read data from TCP Server: %s", strerror(errno));
+            exit(1);
+        }
        
         printf("Data received from server: %s\n", message);
     }

@@ -15,6 +15,7 @@
 struct sockaddr_in serveraddress, client;
 socklen_t length;
 int socket_file_descriptor, connection, bind_status, connection_status;
+
 char message[MESSAGE_LENGTH];
 extern int errno;
 
@@ -50,7 +51,7 @@ int main()
     serveraddress.sin_family = AF_INET;
     
     // Binding the newly created socket with the given Ip Address
-    bind_status = bind(sockert_file_descriptor, (sockaddr*)&serveraddress, sizeof(serveraddress));
+    bind_status = bind(socket_file_descriptor, (struct sockaddr*)&serveraddress, sizeof(serveraddress));
    
     if(bind_status == -1){
         printf("Socket binding failed! -- %s\n", strerror(errno));
@@ -58,7 +59,7 @@ int main()
     }
    
     // Server is listening for new creation
-    connection_status = listen(sockert_file_descriptor, MAX_CONNECTIONS);
+    connection_status = listen(socket_file_descriptor, MAX_CONNECTIONS);
    
     if(connection_status == -1){
         printf("Socket is unable to listen for new connections! -- %s\n", strerror(errno));
@@ -68,7 +69,7 @@ int main()
     }
    
     length =  sizeof(client);
-    connection = accept(sockert_file_descriptor, (sockaddr*)&client, &length);
+    connection = accept(socket_file_descriptor, (struct sockaddr*)&client, &length);
    
     if(connection == -1){
         printf("Server is unable to accept the data from client! -- %s\n", strerror(errno));
@@ -97,7 +98,7 @@ int main()
        
         // If the number of bytes is >= 0 then the data is sent successfully
         if(bytes >= 0){
-            printf("Data successfully sent to the client.!\n");
+            printf("Data successfully sent to the client!\n");
         }
     }
    
