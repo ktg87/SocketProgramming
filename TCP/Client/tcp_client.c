@@ -32,7 +32,7 @@ int main()
     }
     
     //Just so we can see how this compares to the TCP server
-    printf("Socket File Descriptor: %d", socket_file_descriptor);
+    printf("Socket File Descriptor: %d\n", socket_file_descriptor);
 
     // Erases the memory
     bzero(&serveraddress, sizeof(serveraddress));
