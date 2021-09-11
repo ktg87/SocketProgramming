@@ -41,6 +41,9 @@ int main()
     serveraddress.sin_addr.s_addr = inet_addr("127.0.0.1");
    
     // Setting the port number
+    // Converts the unsigned short integer
+    // hostshort from host byte order to
+    // network byte order
     serveraddress.sin_port = htons(PORT);
    
     // Protocol family

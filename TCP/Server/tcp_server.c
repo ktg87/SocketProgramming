@@ -28,13 +28,14 @@ int main()
     // 0 --> Internet Protocol
     socket_file_descriptor = socket(AF_INET, SOCK_STREAM, 0);
     
+    // If the socket is unable to be created, show the error and exit
     if(socket_file_descriptor == -1)
     {
         printf("Socket creation failed! -- %s\n", strerror(errno));
         exit(1);
     }
    
-    // Erases the memory
+    // Erases the memory of the server address object that is being created
     bzero(&serveraddress, sizeof(serveraddress));
    
     // Server Properties - Notes:
@@ -58,9 +59,10 @@ int main()
         exit(1);
     }
    
-    // Server is listening for new creation
+    // Server is listening to establish a connection
     connection_status = listen(socket_file_descriptor, MAX_CONNECTIONS);
    
+    // If the server is unable to listen for a connection, it should exit
     if(connection_status == -1){
         printf("Socket is unable to listen for new connections! -- %s\n", strerror(errno));
         exit(1);
@@ -68,15 +70,21 @@ int main()
         printf("Server is listening for new connection: \n");
     }
    
+    // Server is accepting data sent from the client
     length =  sizeof(client);
     connection = accept(socket_file_descriptor, (struct sockaddr*)&client, &length);
    
+    // Server exits if there are any errors
     if(connection == -1){
         printf("Server is unable to accept the data from client! -- %s\n", strerror(errno));
         exit(1);
     }
 
-    // Communication Establishment
+    // Communication is established and an infinite loop is 
+    // used to receive data from the client and to send repsonses 
+    // to the client.
+    //
+    // When the client sends 'end' both the client and server are terminated
     while(1){
         bzero(message, MESSAGE_LENGTH);
         read(connection, message, sizeof(message));
