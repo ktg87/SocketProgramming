@@ -9,12 +9,12 @@
 #include <netinet/in.h>
 
 // Maximum number of bytes that can transfer and receive.
-#define MESSAGE_BUFFER 4096
+#define MAX_MSG_SIZE 4096
 #define PORT 8888 // port number to connect
 
 // Global Data
-char buffer[MESSAGE_BUFFER];
-char message[MESSAGE_BUFFER];
+char buffer[MAX_MSG_SIZE];
+char message[MAX_MSG_SIZE];
 int socket_file_descriptor, message_size;
 socklen_t length;
 const char *end_string = "end";
@@ -32,6 +32,7 @@ void processRequest()
     // Create a UDP Socket via PORT 8888
     // AF_INET --> IPv4
     // SOCK_DGRAM --> Connectionless (UDP)
+    // 0 --> Internet Protocol
     socket_file_descriptor = socket(AF_INET, SOCK_DGRAM, 0);
 
     if(socket_file_descriptor == -1)
@@ -99,7 +100,7 @@ void processRequest()
 
         status = sendto(socket_file_descriptor, 
                         message, 
-                        MESSAGE_BUFFER, 
+                        MAX_MSG_SIZE, 
                         0, 
                         (struct sockaddr*)&client, 
                         sizeof(client));
